@@ -51,3 +51,11 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     l.info(`Server started at port: ${PORT}`)
 })
+
+// index.js
+const { compileRuby, runRuby } = require('./languages/ruby');
+const { compileGo, runGo } = require('./languages/go');
+const { compilePHP, runPHP } = require('./languages/php');
+
+
+

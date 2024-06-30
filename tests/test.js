@@ -1,23 +1,53 @@
-const axios = require('axios')
-const { testCases } = require('./data/testJson')
-const { describe, expect, it } = require('@jest/globals')
+const fs = require('fs');
+const { compileJavaScript, runJavaScript } = require('../language/javascript');
+const { compilePython, runPython } = require('../language/python');
 
-const ENDPOINT = process.env.ENDPOINT || 'http://localhost:3000/api/execute/'
-
-describe('Tests', () => {
-    for (const testCase of testCases) {
-        it(testCase.name, async () => {
-            const response = await axios.post(ENDPOINT, testCase.reqObject)
-            if (typeof response.data.output === 'object') {
-                expect(response.data.output.score).toBeDefined()
-                expect(response.data.output.rationale.positives).toBeDefined()
-                expect(response.data.output.rationale.negatives).toBeDefined()
-                expect(response.data.output.points).toBeDefined()
-            } else {
-                expect(response).toHaveProperty('data.output', testCase.expectedResponse.val)
+describe('Compiler Tests', () => {
+    
+    describe('Python Compiler', () => {
+        test('should compile Python code', async () => {
+            try {
+                const code = 'print("Hello, Python!")';
+                const result = await compilePython(code);
+                expect(result).toBeTruthy();
+            } catch (error) {
+                console.error('Python Compile Error:', CircularJSON.stringify(error));
+                throw error;
             }
-            expect(response).toHaveProperty('status', testCase.expectedResponse.status)
-            expect(response).toHaveProperty('data.error', testCase.expectedResponse.error)
-        }, 15000)
-    }
-})
+        });
+
+        test('should run Python code', async () => {
+            try {
+                const code = 'print("Hello, Python!")';
+                const result = await runPython(code);
+                expect(result.trim()).toBe('Hello, Python!');
+            } catch (error) {
+                console.error('Python Run Error:', CircularJSON.stringify(error));
+                throw error;
+            }
+        });
+    });
+    describe('JavaScript Compiler', () => {
+        test('should compile JavaScript code', async () => {
+            try {
+                const code = 'console.log("Hello, JavaScript!")';
+                const result = await compileJavaScript(code);
+                expect(result).toBeTruthy();
+            } catch (error) {
+                console.error('JavaScript Compile Error:', CircularJSON.stringify(error));
+                throw error;
+            }
+        });
+
+        test('should run JavaScript code', async () => {
+            try {
+                const code = 'console.log("Hello, JavaScript!")';
+                const result = await runJavaScript(code);
+                expect(result.trim()).toBe('Hello, JavaScript!');
+            } catch (error) {
+                console.error('JavaScript Run Error:', CircularJSON.stringify(error));
+                throw error;
+            }
+        });
+    });
+});
